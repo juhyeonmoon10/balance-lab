@@ -11,5 +11,6 @@ work/
 .DS_Store
 Thumbs.db
 Desktop.ini
+.openai/
 
 # dist contains the editable application source and is intentionally tracked.

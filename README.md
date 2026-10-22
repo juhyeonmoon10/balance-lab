@@ -1,10 +1,12 @@
 # Balance Lab · 게임 밸런스 실험실
 
+[라이브 데모](https://juhyeonmoon10.github.io/balance-lab/) · [자동 검사](https://github.com/juhyeonmoon10/balance-lab/actions/workflows/ci.yml) · [모델 설명](docs/MODEL.md)
+
 무기 수치를 조정했을 때 전투 결과가 얼마나 달라지는지 비교하는 브라우저 실험 도구입니다. 한 번의 운 좋은 플레이로 결론을 내리지 않도록, 기준안과 패치안을 같은 시드로 반복 실행하고 승률과 불확실성을 함께 살펴봅니다.
 
 기존 [LastWarSurvivar](https://github.com/juhyeonmoon10/LastWarSurvivar)의 무기 수치에서 출발해 만든 별도 시뮬레이터입니다. 원본 게임 전체를 이식하거나 실제 플레이 결과를 재현하는 도구는 아닙니다. 분대와 적의 교전을 단순화한 모델에서 수치 변경의 영향을 비교합니다.
 
-![기준안과 패치안의 승률, 전투 리플레이, 분포를 비교하는 Balance Lab 화면](docs/screenshot.png)
+![기준안과 패치안의 승률, 전투 리플레이, 분포를 비교하는 Balance Lab 화면](docs/screenshot.jpg)
 
 전투 규칙과 통계 해석은 [실험 모델 문서](docs/MODEL.md)에 정리했습니다.
 
