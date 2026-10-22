@@ -106,7 +106,7 @@ dist/
 docs/
   MODEL.md            전투 규칙과 통계 해석
   example-experiment.json  불러와 재실행할 예시 실험
-  screenshot.png      앱 화면
+  screenshot.jpg      앱 화면
 scripts/
   serve.mjs           개발용 정적 파일 서버
 tests/
