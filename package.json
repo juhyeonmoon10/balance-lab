@@ -1,0 +1,13 @@
+{
+  "name": "balance-lab",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Reproducible game balance experiments inspired by LastWarSurvivar",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "dev": "node scripts/serve.mjs",
+    "test": "node --test",
+    "check": "node --check dist/app.js && node --check dist/worker.js && node --check dist/lib/engine.js && node --check dist/lib/presets.js && node --check dist/lib/experiments.js && node --check scripts/serve.mjs"
+  }
+}

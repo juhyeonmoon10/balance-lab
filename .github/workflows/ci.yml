@@ -1,0 +1,28 @@
+name: Check
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run simulation tests
+        run: npm test
+      - name: Check application syntax
+        run: npm run check
+      - name: Check all JavaScript modules
+        shell: bash
+        run: |
+          for file in dist/*.js dist/lib/*.js scripts/*.mjs; do
+            node --check "$file"
+          done

@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101310">
+  <meta name="description" content="무기 수치를 바꾸고, 같은 시드의 반복 전투로 패치 전후의 승률과 생존율을 비교하세요. 재현 가능한 게임 밸런스 실험실.">
+  <title>BALANCE LAB — 게임 밸런스 실험실</title>
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">실험실로 이동</a>
+  <header class="site-header">
+    <a href="./" class="brand" aria-label="밸런스 랩 홈"><span class="brand-mark">b<span>l</span></span><span>BALANCE<span class="brand-light"> / LAB</span></span><span class="version">v1.0</span></a>
+    <nav aria-label="주 메뉴"><a class="nav-active" href="#main"><span class="tiny-dot"></span>실험실</a><a href="#history-section">실험 기록 <span id="history-count" class="nav-count">0</span></a><button id="model-open" class="nav-button">모델 안내 <span aria-hidden="true">↗</span></button></nav>
+    <span class="local-badge"><span class="tiny-dot"></span>브라우저에서 실행</span>
+  </header>
+
+  <main id="main" class="workspace">
+    <section class="page-heading">
+      <div><div class="eyebrow">GAME DESIGN / EXPERIMENT 001</div><h1>좋은 밸런스는, <span>실험에서.</span></h1><p>수치를 조정하고, 같은 조건으로 비교하세요. 감각에 근거를 더하는 실험실.</p></div>
+      <div class="heading-actions"><button id="import-button" class="button ghost"><span aria-hidden="true">↥</span> 실험 불러오기</button><button id="run-button" class="button primary"><span aria-hidden="true">▶</span> 실험 실행 <kbd>↵</kbd></button></div>
+    </section>
+
+    <div class="lab-layout">
+      <aside class="controls" aria-label="실험 설정">
+        <div class="panel-header"><h2><span class="section-no">01</span> 실험 설정</h2><button id="reset-button" class="text-button">초기화 ↺</button></div>
+        <section class="control-section">
+          <div class="field-heading"><h3>무기 선택</h3><span class="muted small">원본 게임 기준</span></div>
+          <div id="weapon-options" class="weapon-options" role="group" aria-label="무기 선택"></div>
+        </section>
+        <section class="control-section patch-section">
+          <div class="field-heading"><h3>패치 수치</h3><span class="tag green">B · PATCH</span></div>
+          <p class="helper">A는 원본 수치로 고정됩니다.</p>
+          <div class="tuning-field"><div class="field-heading"><label for="damage">공격력 <span class="unit">DMG</span></label><span class="input-number"><input id="damage-number" type="number" min="0.1" max="20" step="0.05" aria-label="패치 공격력 숫자"></span></div><input id="damage" type="range" min="0.1" max="20" step="0.05"><div class="range-labels"><span id="base-damage"></span><span id="delta-damage" class="tuning-delta"></span></div></div>
+          <div class="tuning-field"><div class="field-heading"><label for="interval">발사 간격 <span class="unit">SEC</span></label><span class="input-number"><input id="interval-number" type="number" min="0.02" max="2" step="0.005" aria-label="패치 발사 간격 숫자"></span></div><input id="interval" type="range" min="0.02" max="2" step="0.005"><div class="range-labels"><span id="base-interval"></span><span id="delta-interval" class="tuning-delta"></span></div></div>
+          <div class="tuning-field"><div class="field-heading"><label for="crit">치명타 확률 <span class="unit">%</span></label><span class="input-number"><input id="crit-number" type="number" min="0" max="100" step="1" aria-label="패치 치명타 확률 숫자"></span></div><input id="crit" type="range" min="0" max="100" step="1"><div class="range-labels"><span id="base-crit"></span><span id="delta-crit" class="tuning-delta"></span></div></div>
+          <div class="dps-preview"><span>기대 DPS <small>병사 1명</small></span><div><span id="base-dps" class="base-dps"></span><span class="arrow">→</span><strong id="patch-dps"></strong></div></div>
+          <button id="equalize-button" class="subtle-button">원본과 같은 수치로 맞추기</button>
+        </section>
+        <section class="control-section">
+          <div class="field-heading"><h3>전투 조건</h3><span class="tag">A = B</span></div>
+          <label for="enemy" class="field-label">적 프리셋</label><select id="enemy"></select>
+          <details class="enemy-details"><summary>적 · 분대 세부 설정 <span>＋</span></summary><div class="mini-grid">
+            <label>적 체력<input id="enemy-hp" type="number" min="1" max="100000" step="1"></label>
+            <label>적 공격력<input id="enemy-damage" type="number" min="0" max="10000" step="0.1"></label>
+            <label>공격 간격 (초)<input id="enemy-interval" type="number" min="0.1" max="10" step="0.05"></label>
+            <label>적 수<input id="enemy-count" type="number" min="1" max="100" step="1"></label>
+            <label>방어율 (0–0.9)<input id="enemy-armor" type="number" min="0" max="0.9" step="0.05"></label>
+            <label>분대 병력<input id="squad-size" type="number" min="1" max="100" step="1"></label>
+            <label>분대 체력<input id="player-hp" type="number" min="1" max="10000" step="1"></label>
+            <label>제한 시간 (초)<input id="time-limit" type="number" min="1" max="120" step="1"></label>
+          </div></details>
+          <div class="mini-grid run-settings"><label for="trials">반복 횟수<select id="trials"><option value="100">100회 · 빠르게</option><option value="500">500회 · 기본</option><option value="1000">1,000회</option><option value="2000">2,000회 · 정밀하게</option></select></label><label for="seed">난수 시드<input id="seed" type="number" min="0" max="4294967295" step="1"></label></div>
+          <p class="seed-note"><span aria-hidden="true">⌘</span> 같은 시드는 같은 전투를 만듭니다.</p>
+        </section>
+        <div class="mobile-run"><button id="mobile-run-button" class="button primary">▶ 이 설정으로 실험 실행</button></div>
+      </aside>
+
+      <section class="results-area" aria-label="실험 결과" aria-busy="false" id="results-area">
+        <div class="result-status"><div><span id="status-dot" class="status-dot"></span><strong id="run-state">실험 준비 중</strong><span id="run-meta"></span></div><span id="experiment-id" class="mono">EXP / 001</span></div>
+        <div class="progress-track" id="progress-track" hidden><div id="progress-bar"></div></div>
+        <div id="error-box" class="error-box" role="alert" hidden></div>
+        <div id="metrics" class="metrics">
+          <article class="metric-card"><div class="metric-label">승률 변화<span>WIN RATE</span></div><div class="metric-value" id="metric-win">—<small>pp</small></div><div class="metric-detail" id="metric-win-detail">실험 결과를 계산하고 있습니다.</div></article>
+          <article class="metric-card"><div class="metric-label">평균 전투 시간<span>DURATION</span></div><div class="metric-value neutral" id="metric-time">—<small>초</small></div><div class="metric-detail" id="metric-time-detail">승리·패배·시간 초과를 모두 포함</div></article>
+          <article class="metric-card"><div class="metric-label">평균 유효 피해량<span>DAMAGE</span></div><div class="metric-value neutral" id="metric-damage">—</div><div class="metric-detail" id="metric-damage-detail">초과 피해를 제외한 실제 감소 체력</div></article>
+        </div>
+
+        <div class="analysis-row">
+          <section class="panel comparison-panel"><div class="panel-header"><h2><span class="section-no">02</span> 패치 전후 비교</h2><span class="panel-caption">승률 · 95% 신뢰구간</span></div><div class="chart-legend"><span><i class="legend-base"></i>A · 원본</span><span><i class="legend-patch"></i>B · 패치</span></div><div id="win-chart" class="win-chart" role="img" aria-label="실험 후 승률 비교가 표시됩니다."></div><div id="insight" class="insight"><span class="insight-icon">↗</span><p>동일한 전투 조건으로 두 무기를 비교합니다.</p></div><p class="chart-footnote">오차 막대는 각 승률의 Wilson 95% 신뢰구간입니다. 승률 차이의 신뢰구간은 아닙니다.</p></section>
+          <section class="panel replay-panel"><div class="panel-header"><h2><span class="section-no">03</span> 전투 리플레이</h2><span class="live-pill"><span class="tiny-dot"></span>REPLAY</span></div><div class="replay-meta"><span>첫 번째 전투 · <span id="replay-seed" class="mono">SEED 2048</span></span><span id="replay-time" class="mono">00.0s</span></div><canvas id="arena" width="680" height="380" role="img" aria-label="원본과 패치의 첫 전투 타임라인을 재생합니다."></canvas><div id="replay-summary" class="replay-summary"></div><div class="replay-controls"><button id="play-button" class="icon-button" aria-label="리플레이 재생">▶</button><input id="replay-scrub" type="range" min="0" max="1000" value="0" aria-label="리플레이 진행 위치"><select id="replay-speed" aria-label="재생 속도"><option value="1">1×</option><option value="2" selected>2×</option><option value="4">4×</option></select></div><p class="chart-footnote">전체 실험 중 한 쌍의 전투를 시각화한 요약입니다.</p></section>
+        </div>
+
+        <section class="panel timeline-panel"><div class="panel-header"><h2><span class="section-no">04</span> 전투 분포</h2><div class="chart-tabs" role="group" aria-label="분포 차트"><button class="selected" id="survival-tab" aria-pressed="true">생존율</button><button id="duration-tab" aria-pressed="false">종료 시간</button></div></div><div class="distribution-heading"><p id="distribution-description">경과 시간별 살아 있는 분대의 비율 · 승리한 분대는 생존으로 유지</p><div class="chart-legend compact"><span><i class="legend-base"></i>원본</span><span><i class="legend-patch"></i>패치</span></div></div><div id="distribution-chart" role="img" aria-label="전투 분포 차트"></div></section>
+
+        <section id="history-section" class="panel history-panel"><div class="panel-header"><h2><span class="section-no">05</span> 실험 기록 <span id="saved-count" class="count-chip">0</span></h2><div class="history-actions"><button id="csv-button" class="text-button">CSV 내보내기 ↗</button><button id="json-button" class="text-button">JSON ↓</button><button id="save-button" class="button small-button">＋ 현재 실험 저장</button></div></div><div id="history-list"></div><p class="storage-note">기록은 이 브라우저에 저장됩니다. 다른 기기에서는 JSON 파일로 불러오세요.</p></section>
+        <div class="workspace-footer"><span><span class="tiny-dot"></span> DETERMINISTIC BY DESIGN</span><span>LastWarSurvivar에서 출발한 전투 실험 모델 · 엔진 v1.0.0</span></div>
+      </section>
+    </div>
+  </main>
+  <input id="import-file" type="file" accept="application/json,.json" hidden>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+  <div id="live-status" class="sr-only" role="status" aria-live="polite"></div>
+  <dialog id="model-dialog"><div class="dialog-header"><span class="eyebrow">ABOUT THE EXPERIMENT</span><button id="model-close" class="icon-button" aria-label="모델 안내 닫기">×</button></div><h2>수치를 설명할 수 있는 게임.</h2><p>LastWarSurvivar의 무기 공격력·발사 간격·치명타 규칙에서 출발해, 패치 효과를 반복 실험하는 작은 연구 도구입니다.</p><div class="model-facts"><article><span>01</span><h3>원작에서 가져온 것</h3><p>권총 1 / 0.35초, AK-47 1 / 0.1초, 개틀링 2 / 0.05초. 치명타 확률 10%, 배율 2배를 원본 기준으로 사용합니다.</p></article><article><span>02</span><h3>실험을 위해 단순화한 것</h3><p>고정 병력이 적을 순서대로 공격합니다. 적 수치와 분대 체력은 실험용입니다. 이동·조준·탄환 충돌·병력 증감은 재현하지 않습니다.</p></article><article><span>03</span><h3>결과를 읽는 방법</h3><p>동일 시드로 A와 B의 전투를 짝지어 실행합니다. 평균 전투 시간에는 승리·패배·시간 초과가 모두 포함되므로, 짧다고 항상 좋은 것은 아닙니다.</p></article></div><p class="model-limit">이 모델의 개선이 실제 게임의 재미를 보장하지는 않습니다. 결과를 가설로 삼고 실제 플레이 테스트로 검증하세요.</p><a href="https://github.com/juhyeonmoon10/LastWarSurvivar" target="_blank" rel="noreferrer" class="text-link">원본 게임 코드 보기 ↗</a></dialog>
+  <noscript>이 실험실은 브라우저의 JavaScript를 사용합니다. JavaScript를 켜고 다시 열어 주세요.</noscript>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

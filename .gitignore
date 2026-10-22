@@ -1,0 +1,15 @@
+node_modules/
+coverage/
+outputs/
+work/
+.cache/
+.tmp/
+*.log
+.env
+.env.*
+!.env.example
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# dist contains the editable application source and is intentionally tracked.
